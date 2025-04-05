@@ -1,12 +1,8 @@
 import { IsEmail, IsNotEmpty, MinLength,IsEnum } from 'class-validator';
-import { Role } from '../enums/role.enum';
+import { BaseUserDto } from 'src/common/dtos/base-user.dto';
+import { Role } from 'src/common/enums/role.enum';
 
-export class SignupDto {
-  @IsNotEmpty()
-  username: string;
-
-  @IsEmail()
-  email: string;
+export class SignupDto extends BaseUserDto {
 
   @MinLength(6)
   password: string;

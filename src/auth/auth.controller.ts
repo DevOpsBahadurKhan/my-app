@@ -2,11 +2,11 @@ import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common'
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-import { Roles } from './decorators/roles.decorator';
-import { Role } from './enums/role.enum';
-import { RolesGuard } from './guards/roles.guard';
+import { Role } from 'src/common/enums/role.enum';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AssignRoleDto } from './dto/assign-role.dto';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('auth')
 export class AuthController {
