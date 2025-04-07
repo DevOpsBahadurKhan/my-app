@@ -1,0 +1,32 @@
+### Test Get All Doctors
+GET http://localhost:3000/doctor
+Content-Type: application/json
+
+### Test Create doctor
+POST http://localhost:3000/doctor
+Content-Type: application/json
+
+{
+  "doctorname": "Dr. Arun Dungarwal",
+  "title": "Orthopedic Surgon",
+  "exp": "10"
+}
+
+### Test Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "admin123"
+}
+
+### Test signup
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "username":"admin",
+  "email": "admin@gmail.com",
+  "password": "admin123"
+}
