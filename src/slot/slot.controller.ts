@@ -1,34 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
 import { SlotService } from './slot.service';
 import { CreateSlotDto } from './dto/create-slot.dto';
 import { UpdateSlotDto } from './dto/update-slot.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from 'src/common/enums/role.enum';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller('slot')
 export class SlotController {
-  constructor(private readonly slotService: SlotService) {}
+  constructor(private readonly slotService: SlotService) { }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @Post()
-  create(@Body() createSlotDto: CreateSlotDto) {
-    return this.slotService.create(createSlotDto);
+  create(@Body() createSlotDto: CreateSlotDto, @Req() req: any) {
+    const doctorId = req.user.id;
+    return this.slotService.create(createSlotDto, doctorId);
   }
 
-  @Get()
-  findAll() {
-    return this.slotService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.slotService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSlotDto: UpdateSlotDto) {
-    return this.slotService.update(+id, updateSlotDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.slotService.remove(+id);
-  }
 }

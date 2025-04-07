@@ -17,5 +17,16 @@ export class User {
 
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
-  
+
+  @Column({ nullable: true })
+  specialization: string;
+
+  @Column({ nullable: true })
+  exp: string;
+
 }
+
+  // Optional: Agar appointments ke saath relation chahiye
+  //   @OneToMany(() => Appointment, (appointment) => appointment.doctor)
+  //   appointments: Appointment[];
+

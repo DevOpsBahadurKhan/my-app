@@ -1,75 +1,57 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSlotDto } from './dto/create-slot.dto';
-import { UpdateSlotDto } from './dto/update-slot.dto';
 import { Slot } from './entities/slot.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { SlotStatus } from 'src/common/enums/slot-status.enum';
+import { User } from 'src/user/entities/user.entity';
+
 
 @Injectable()
 export class SlotService {
 
   constructor(
-     @InjectRepository(Slot)
-     private slotRepository: Repository<Slot>,
-   ) { }
+    @InjectRepository(Slot)
+    private slotRepo: Repository<Slot>,
   
-   async create(createSlotDto: CreateSlotDto) {
-    const { doctorId, startTime, endTime, autoGenerate, customSlots } = createSlotDto;
+    @InjectRepository(User)
+    private userRepo: Repository<User>,  // yeh correct hai
+  ) { }
   
-    const slotsToCreate: Slot[] = [];
+
+
+
+  async create(createSlotDto: CreateSlotDto, doctorId: number) {
+    const doctor = await this.userRepo.findOne({ where: { id: doctorId } });
   
-    // ✅ Auto 15-min slot generation
-    if (autoGenerate && startTime && endTime) {
-      let current = new Date(startTime);
-      while (current < new Date(endTime)) {
-        const slotStart = new Date(current);
-        const slotEnd = new Date(current.getTime() + 15 * 60 * 1000);
-        if (slotEnd > new Date(endTime)) break;
-  
-        slotsToCreate.push(
-          this.slotRepository.create({
-            doctorId,
-            startTime: slotStart,
-            endTime: slotEnd,
-            isAvailable: true,
-          }),
-        );
-  
-        current = slotEnd;
-      }
+    if (!doctor) {
+      throw new NotFoundException('Doctor not found');
     }
   
-    // ✅ Manual slots
-    if (!autoGenerate && customSlots && customSlots.length > 0) {
-      for (const s of customSlots) {
-        const slot = this.slotRepository.create({
-          doctorId,
-          startTime: new Date(s.startTime),
-          endTime: new Date(s.endTime),
-          isAvailable: true,
-        });
-        slotsToCreate.push(slot);
-      }
+    // Check for Time Conflict
+    const existingSlot = await this.slotRepo.findOne({
+      where: {
+        doctor: { id: doctorId },
+        date: createSlotDto.date,
+        startTime: LessThanOrEqual(createSlotDto.endTime),
+        endTime: MoreThanOrEqual(createSlotDto.startTime),
+      },
+    });
+  
+    if (existingSlot) {
+      throw new BadRequestException('Slot is already booked for this time');
     }
   
-    return this.slotRepository.save(slotsToCreate);
+    const slot = this.slotRepo.create({
+      date: createSlotDto.date,
+      startTime: createSlotDto.startTime,
+      endTime: createSlotDto.endTime,
+      status: createSlotDto.status || SlotStatus.AVAILABLE,
+      doctor,
+    });
+  
+    return await this.slotRepo.save(slot);
   }
   
-  
 
-  findAll() {
-    return this.slotRepository.find();
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} slot`;
-  }
-
-  update(id: number, updateSlotDto: UpdateSlotDto) {
-    return `This action updates a #${id} slot`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} slot`;
-  }
 }

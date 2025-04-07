@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -17,6 +17,11 @@ export class AuthService {
     ) { }
 
     async signup(signupDto: SignupDto) {
+        const existingUser = await this.userRepository.findOne({ where: { email: signupDto.email } });
+        if (existingUser) {
+            throw new ForbiddenException('Email already exists');
+        }
+
         const hashedPassword = await bcrypt.hash(signupDto.password, 10);
         const user = this.userRepository.create({
             username: signupDto.username,
@@ -30,16 +35,20 @@ export class AuthService {
 
     async login(loginDto: LoginDto) {
         const user = await this.userRepository.findOne({ where: { email: loginDto.email } });
-        if (!user) return { message: 'Invalid credentials' };
+        if (!user) {
+            throw new UnauthorizedException('Invalid credentials');
+        }
 
         const isMatch = await bcrypt.compare(loginDto.password, user.password);
-        if (!isMatch) return { message: 'Invalid credentials' };
+        if (!isMatch) {
+            throw new UnauthorizedException('Invalid credentials');
+        }
 
         const payload = { username: user.username, sub: user.id, role: user.role };
         return { user, access_token: this.jwtService.sign(payload) };
     }
 
-    async assignRole(assignRoleDto:AssignRoleDto, requestingUser: any) {
+    async assignRole(assignRoleDto: AssignRoleDto, requestingUser: any) {
         if (requestingUser.role !== Role.ADMIN) {
             throw new ForbiddenException('Only admins can assign roles');
         }

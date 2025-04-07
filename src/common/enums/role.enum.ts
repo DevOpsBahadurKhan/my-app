@@ -1,5 +1,5 @@
 export enum Role {
-    ADMIN = 'admin',
-    USER = 'user',
-    SUPER_ADMIN = 'SUPER_ADMIN',
+    SUPER_ADMIN = 'SUPER_ADMIN', // Hospital Owner
+    ADMIN = 'admin',  // Doctor / Staff
+    USER = 'user',  // Patient
 }

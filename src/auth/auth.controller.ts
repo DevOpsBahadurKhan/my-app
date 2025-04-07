@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Request, ValidationPipe, UsePipes, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -25,15 +25,15 @@ export class AuthController {
   @Get('profile')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.USER)
-  getProfile() {
-    return { message: 'This is a USER-accessible profile' };
+  getProfile(@Request() req) {
+    return req.user; // Return the user object from the request
   }
 
   @Get('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  getAdminDashboard() {
-    return { message: 'This is an ADMIN-only dashboard' };
+  getAdminDashboard(@Request() req) {
+    return { message: 'Welcome to the admin dashboard', user: req.user }; // Return a message and user object
   }
 
   @Post('assign-role')

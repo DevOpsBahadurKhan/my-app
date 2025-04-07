@@ -6,10 +6,13 @@ export class CreateDoctorDto {
     id: number;
     
     @IsNotEmpty()
+    title: string; 
+
+    @IsNotEmpty()
     doctorname: string;
 
     @IsNotEmpty()
-    title: string;
+    specialization : string;
 
     @IsNotEmpty()
     exp: string;

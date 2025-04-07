@@ -161,3 +161,10 @@ node -v
 v20.15.0
 PS C:\Users\HP> nvm -v
 1.1.11
+
+
+
+<!-- Flow -->
+Doctor → Slot create karega
+Patient → Slot book karega (Appointment)
+Appointment → Doctor-Patient link karega

@@ -1,14 +1,23 @@
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { SlotStatus } from 'src/common/enums/slot-status.enum';
+
 export class CreateSlotDto {
-    doctorId: number;
+  @IsNotEmpty()
+  @IsString()
+  date: string;
 
-    // Auto slot generation fields
-    startTime?: Date;
-    endTime?: Date;
-    autoGenerate?: boolean; // if true → auto 15-min slots
+  @IsNotEmpty()
+  @IsString()
+  startTime: string;
 
-    // Manual slot
-    customSlots?: {
-        startTime: Date;
-        endTime: Date;
-    }[];
+  @IsNotEmpty()
+  @IsString()
+  endTime: string;
+
+  @IsEnum(SlotStatus)
+  status: SlotStatus;
+
+  @IsNotEmpty()
+  @IsNumber()
+  doctor: number;  // userId as doctor id
 }
