@@ -13,21 +13,21 @@ export class SlotService {
   constructor(
     @InjectRepository(Slot)
     private slotRepo: Repository<Slot>,
-  
+
     @InjectRepository(User)
     private userRepo: Repository<User>,  // yeh correct hai
   ) { }
-  
+
 
 
 
   async create(createSlotDto: CreateSlotDto, doctorId: number) {
     const doctor = await this.userRepo.findOne({ where: { id: doctorId } });
-  
+
     if (!doctor) {
       throw new NotFoundException('Doctor not found');
     }
-  
+
     // Check for Time Conflict
     const existingSlot = await this.slotRepo.findOne({
       where: {
@@ -37,11 +37,11 @@ export class SlotService {
         endTime: MoreThanOrEqual(createSlotDto.startTime),
       },
     });
-  
+
     if (existingSlot) {
       throw new BadRequestException('Slot is already booked for this time');
     }
-  
+
     const slot = this.slotRepo.create({
       date: createSlotDto.date,
       startTime: createSlotDto.startTime,
@@ -49,9 +49,20 @@ export class SlotService {
       status: createSlotDto.status || SlotStatus.AVAILABLE,
       doctor,
     });
-  
+
     return await this.slotRepo.save(slot);
   }
-  
+
+  async findAll() {
+    const slots = await this.slotRepo.find();
+    if (slots.length === 0) {
+      throw new NotFoundException('No slots found');
+    }
+    return {
+      message: 'Slots fetched successfully',
+      slots
+    };
+  }
+
 
 }

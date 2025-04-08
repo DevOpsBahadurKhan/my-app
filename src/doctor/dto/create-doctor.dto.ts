@@ -1,18 +1,18 @@
-import { IsNotEmpty } from 'class-validator';
-import { PrimaryGeneratedColumn } from 'typeorm';
+import { IsNotEmpty, IsOptional, IsEmpty } from 'class-validator';
 
 export class CreateDoctorDto {
-    @PrimaryGeneratedColumn()
-    id: number;
-    
+
+    @IsEmpty({ message: 'id should not exist' })  // Important for safety
+    id?: number;
+
     @IsNotEmpty()
-    title: string; 
+    title: string;
 
     @IsNotEmpty()
     doctorname: string;
 
     @IsNotEmpty()
-    specialization : string;
+    specialization: string;
 
     @IsNotEmpty()
     exp: string;

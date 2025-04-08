@@ -11,7 +11,7 @@ export class DoctorService {
   constructor(
     @InjectRepository(User)
     private userRepo: Repository<User>,
-  ) {}
+  ) { }
 
   // Create Doctor
   async create(createDoctorDto: CreateDoctorDto) {
