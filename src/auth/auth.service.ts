@@ -58,4 +58,38 @@ export class AuthService {
         await this.userRepository.save(user);
         return { message: 'Role updated successfully' };
     }
+
+    // Google Login handler method
+    async googleLogin(req: any) {
+        if (!req.user) {
+            return 'No user from Google';
+        }
+
+        let user = await this.userRepository.findOne({ where: { email: req.user.email } });
+
+        if (!user) {
+            // Create user if doesn't exist
+            user = this.userRepository.create({
+                email: req.user.email,
+                username: req.user.name,
+                password: '', // no password from Google
+                role: Role.USER,
+            });
+            await this.userRepository.save(user);
+        }
+
+        const payload = {
+            email: user.email,
+            sub: user.id,
+            role: user.role,
+        };
+
+        return {
+            message: 'Google login success',
+            user,
+            access_token: this.jwtService.sign(payload),
+        };
+    }
+
+
 }

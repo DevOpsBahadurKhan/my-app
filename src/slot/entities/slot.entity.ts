@@ -10,19 +10,11 @@ export class Slot {
   @Column()
   date: string;
 
-<<<<<<< Updated upstream
   @Column()
   startTime: string;
 
   @Column()
   endTime: string;
-=======
-  @Column({ type: 'timestamp' , default: () => 'CURRENT_TIMESTAMP'})
-  startTime: Date;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  endTime: Date;
->>>>>>> Stashed changes
 
   @Column({
     type: 'enum',

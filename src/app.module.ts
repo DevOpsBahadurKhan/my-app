@@ -6,19 +6,23 @@ import { AppointmentModule } from './appointment/appointment.module';
 import { SlotModule } from './slot/slot.module';
 import { UserModule } from './user/user.module';
 import dataSource from './data-source';
+import { ConfigModule } from '@nestjs/config';
 
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       ...dataSource.options,
-      autoLoadEntities: true 
+      autoLoadEntities: true
     }),
     AuthModule,
     DoctorModule,
     AppointmentModule,
     SlotModule,
     UserModule,
+    ConfigModule.forRoot({
+      isGlobal: true, // available in all modules
+    }),
   ],
   controllers: [],
   providers: [],

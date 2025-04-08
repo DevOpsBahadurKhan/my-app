@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Request, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { Role } from 'src/common/enums/role.enum';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { AssignRoleDto } from './dto/assign-role.dto';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -41,6 +42,19 @@ export class AuthController {
   @Roles(Role.ADMIN)
   assignRole(@Body() assignRoleDto: AssignRoleDto, @Request() req) {
     return this.authService.assignRole(assignRoleDto, req.user); // Pass the DTO object
+  }
+
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {
+    // Initiates Google OAuth2 login flow
+  }
+
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthRedirect(@Req() req) {
+    return this.authService.googleLogin(req);
   }
 
 }
