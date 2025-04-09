@@ -59,6 +59,8 @@ export class AuthService {
         return { message: 'Role updated successfully' };
     }
 
+
+
     // Google Login handler method
     async googleLogin(req: any) {
         if (!req.user) {

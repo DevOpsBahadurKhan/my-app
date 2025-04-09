@@ -23,7 +23,7 @@ export class Slot {
   })
   status: SlotStatus;
 
-  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })  // Optional: Delete slots if doctor deleted
+  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'doctorId' }) // This line is important
   doctor: User;
 }

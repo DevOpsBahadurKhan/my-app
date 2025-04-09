@@ -8,11 +8,11 @@ export class Appointment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, user => user.id, { eager: true })
+  @ManyToOne(() => User, { nullable: true, eager: true }) // Nullable for guest patients
   @JoinColumn({ name: 'patientId' })
   patient: User;
 
-  @ManyToOne(() => User, user => user.id, { eager: true })
+  @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'doctorId' })
   doctor: User;
 
@@ -20,11 +20,17 @@ export class Appointment {
   @JoinColumn({ name: 'slotId' })
   slot: Slot;
 
-  @Column({
-    type: 'enum',
-    enum: AppointmentStatus,
-    default: AppointmentStatus.PENDING,
-  })
+  @Column({ nullable: true }) // For guest patients
+  guestName: string;
+
+  @Column({ nullable: true }) // For guest patients
+  guestPhone: string;
+
+  @ManyToOne(() => User, { nullable: true, eager: true }) // Admin/Staff who booked it
+  @JoinColumn({ name: 'bookedById' })
+  bookedBy: User;
+
+  @Column({ type: 'enum', enum: AppointmentStatus, default: AppointmentStatus.PENDING })
   status: AppointmentStatus;
 
   @Column({ type: 'text', nullable: true })
@@ -36,4 +42,3 @@ export class Appointment {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsEmpty } from 'class-validator';
+import { IsNotEmpty, IsEmpty } from 'class-validator';
 
 export class CreateDoctorDto {
 
